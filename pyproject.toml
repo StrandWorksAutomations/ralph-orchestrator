@@ -6,7 +6,10 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 authors = [
-  {name = "Mikey O'Brien", email = "m@mobrienv.dev"}
+  {name = "StrandWorksAutomations", email = "admin@strandautomationworks.com"}
+]
+maintainers = [
+  {name = "StrandWorksAutomations", email = "admin@strandautomationworks.com"}
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -52,10 +55,10 @@ docs = [
     "pymdown-extensions>=10.16.1",
 ]
 [project.urls]
-Homepage = "https://mikeyobrien.github.io/ralph-orchestrator/"
-Repository = "https://github.com/mikeyobrien/ralph-orchestrator"
-Documentation = "https://mikeyobrien.github.io/ralph-orchestrator/"
-Issues = "https://github.com/mikeyobrien/ralph-orchestrator/issues"
+Homepage = "https://github.com/StrandWorksAutomations/ralph-orchestrator"
+Repository = "https://github.com/StrandWorksAutomations/ralph-orchestrator"
+Documentation = "https://github.com/StrandWorksAutomations/ralph-orchestrator"
+Issues = "https://github.com/StrandWorksAutomations/ralph-orchestrator/issues"
 
 [project.scripts]
 ralph = "ralph_orchestrator.__main__:main"
