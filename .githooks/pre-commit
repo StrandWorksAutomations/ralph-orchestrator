@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# pre-commit-gitleaks — block commits that introduce secrets.
+# Source of truth: /Users/jonathanbouren/PROJECTS/_shared-configs/hooks/pre-commit-gitleaks
+# Installed via: _shared-configs/scripts/install-gitleaks-hook.sh
+# Opt-out for a single commit: SKIP_GITLEAKS=1 git commit ...
+# Permanent opt-out for a clone: touch .githooks/pre-commit.disabled
+# Linear: STR-350
+
+set -uo pipefail
+
+if [ -f "$(git rev-parse --show-toplevel)/.githooks/pre-commit.disabled" ]; then
+  echo "[gitleaks] disabled via .githooks/pre-commit.disabled — skipping" >&2
+  exit 0
+fi
+
+if [ "${SKIP_GITLEAKS:-0}" = "1" ]; then
+  echo "[gitleaks] skipped via SKIP_GITLEAKS=1" >&2
+  exit 0
+fi
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+  cat >&2 <<'MSG'
+[gitleaks] WARNING: gitleaks not installed — secret scan SKIPPED.
+  Install: brew install gitleaks  (or https://github.com/gitleaks/gitleaks)
+  This commit is NOT being scanned for secrets.
+MSG
+  exit 0
+fi
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "$REPO_ROOT"
+
+# Use repo-local .gitleaks.toml if present; otherwise fall back to gitleaks default.
+CONFIG_ARG=()
+if [ -f "$REPO_ROOT/.gitleaks.toml" ]; then
+  CONFIG_ARG=(--config "$REPO_ROOT/.gitleaks.toml")
+fi
+
+if ! gitleaks git --staged --redact --no-banner --exit-code 1 "${CONFIG_ARG[@]}" "$REPO_ROOT" >/tmp/gitleaks-precommit.$$.log 2>&1; then
+  echo "" >&2
+  echo "============================================================" >&2
+  echo " gitleaks BLOCKED this commit — staged changes look like secrets." >&2
+  echo "============================================================" >&2
+  cat /tmp/gitleaks-precommit.$$.log >&2
+  echo "" >&2
+  echo " If this is a false positive:" >&2
+  echo "   1. Mark the line with  // gitleaks:allow  (or # gitleaks:allow)" >&2
+  echo "   2. Or add a finding-specific allowlist in .gitleaks.toml" >&2
+  echo "   3. Or bypass once with  SKIP_GITLEAKS=1 git commit ..." >&2
+  echo "" >&2
+  rm -f /tmp/gitleaks-precommit.$$.log
+  exit 1
+fi
+
+rm -f /tmp/gitleaks-precommit.$$.log
+exit 0

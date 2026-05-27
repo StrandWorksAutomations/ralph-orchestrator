@@ -117,3 +117,6 @@ PROMPT.md
 
 # Codex local state
 .codex/
+
+# Per-project lifecycle scratch (spec §3.2 / §10)
+_session/

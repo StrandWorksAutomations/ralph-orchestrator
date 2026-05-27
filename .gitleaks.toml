@@ -1,0 +1,46 @@
+# .gitleaks.toml — repo-local allowlist for the pre-commit gitleaks hook.
+# Inherits the gitleaks default ruleset and adds path/regex allowlists for
+# legitimate false positives (test fixtures, docs, .env.example).
+# Linear: STR-350
+#
+# To extend per-repo, append entries under [allowlist] — leave the [extend] line
+# at top so we keep the upstream rules.
+
+[extend]
+useDefault = true
+
+# Global allowlist applies to every rule.
+[[allowlists]]
+description = "Test fixtures, examples, and credential-audit reports"
+paths = [
+  '''(?i)test/''',
+  '''(?i)tests/''',
+  '''(?i)__tests__/''',
+  '''(?i)fixtures/''',
+  '''(?i)examples?/''',
+  '''(?i)docs/credential-audit-.*''',
+  '''(?i)_ops/security/.*''',
+  '''(?i)\.env\.example$''',
+  '''(?i)\.env\.template$''',
+  '''(?i)\.env\.sample$''',
+  '''(?i)package-lock\.json$''',
+  '''(?i)yarn\.lock$''',
+  '''(?i)pnpm-lock\.yaml$''',
+  '''(?i)bun\.lockb?$''',
+  '''(?i)Cargo\.lock$''',
+  '''(?i)poetry\.lock$''',
+  '''(?i)\.gitleaks\.toml$''',
+]
+
+# Common placeholder strings that look like secrets but aren't.
+[[allowlists]]
+description = "Obvious placeholder values"
+regexes = [
+  '''(?i)(your[-_]?api[-_]?key)''',
+  '''(?i)(replace[-_]?me)''',
+  '''(?i)(example[-_]?key)''',
+  '''(?i)(xxxx+|0000+|1234+)''',
+  '''(?i)(placeholder)''',
+  '''(?i)(todo[-_]?replace)''',
+  '''(?i)(dummy[-_]?(secret|key|token))''',
+]
